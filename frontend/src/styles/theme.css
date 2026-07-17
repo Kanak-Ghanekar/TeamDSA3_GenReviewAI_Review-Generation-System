@@ -1,0 +1,146 @@
+/* Mockup Inspired Teal Navy & Mint Emerald Design System Tokens */
+
+:root {
+  /* Default: Modern Dark Emerald & Navy Canvas */
+  --theme-primary: #10b981;                       /* Mockup Mint/Emerald Green */
+  --theme-bg: #030712;                            /* Deep Navy Charcoal Canvas */
+  --theme-card: rgba(10, 15, 30, 0.8);            /* Frosted Translucent Card */
+  --theme-text: #f3f4f6;                          /* High-Contrast White */
+  --theme-border: rgba(16, 185, 129, 0.15);       /* Muted Emerald Green Border */
+  --theme-accent: #07171e;                        /* Deep Teal Accent */
+  --theme-glow: rgba(16, 185, 129, 0.1);
+  --font-family: 'Outfit', 'Inter', sans-serif;
+  --theme-radius: 16px;
+}
+
+/* Light Mode: Elegant Professional Clean Theme */
+.light {
+  --theme-primary: #059669;                       /* Deep Forest Emerald Green */
+  --theme-bg: #f4fbf7;                            /* Clean Light Mint White */
+  --theme-card: #ffffff;                          /* Solid Pure White Card */
+  --theme-text: #064e3b;                          /* High-Contrast Deep Forest Text */
+  --theme-border: #cbd5e1;                        /* Slate Grey Border */
+  --theme-accent: #ecfdf5;                        /* Light Mint Accent Fills */
+  --theme-glow: rgba(5, 150, 105, 0.05);
+}
+
+/* Category Templates - Dark (Default) */
+[data-theme="restaurant"] {
+  --theme-primary: #10b981;
+  --theme-bg: #030712;
+  --theme-card: rgba(10, 15, 30, 0.8);
+  --theme-text: #f3f4f6;
+  --theme-border: rgba(16, 185, 129, 0.15);
+  --theme-accent: #07171e;
+}
+
+[data-theme="tyre_shop"] {
+  --theme-primary: #38bdf8;
+  --theme-bg: #030408;
+  --theme-card: rgba(12, 16, 26, 0.75);
+  --theme-text: #f1f5f9;
+  --theme-border: rgba(255, 255, 255, 0.07);
+  --theme-accent: #0f1c2d;
+}
+
+[data-theme="salon_retail"] {
+  --theme-primary: #ec4899;
+  --theme-bg: #050204;
+  --theme-card: rgba(18, 10, 16, 0.75);
+  --theme-text: #fdf2f8;
+  --theme-border: rgba(255, 255, 255, 0.07);
+  --theme-accent: #240c1a;
+}
+
+[data-theme="hotel"] {
+  --theme-primary: #d4af37;
+  --theme-bg: #020409;
+  --theme-card: rgba(10, 15, 28, 0.75);
+  --theme-text: #f8fafc;
+  --theme-border: rgba(255, 255, 255, 0.07);
+  --theme-accent: #1a160d;
+}
+
+/* Category Templates - Light Mode Overrides (Matching Home Theme) */
+.light [data-theme="restaurant"],
+.light[data-theme="restaurant"] {
+  --theme-primary: #059669;
+  --theme-bg: #f4fbf7;
+  --theme-card: #ffffff;
+  --theme-text: #064e3b;
+  --theme-border: #cbd5e1;
+  --theme-accent: #ecfdf5;
+}
+
+.light [data-theme="tyre_shop"],
+.light[data-theme="tyre_shop"] {
+  --theme-primary: #0284c7;                       /* Ocean Blue */
+  --theme-bg: #f0f9ff;
+  --theme-card: #ffffff;
+  --theme-text: #0369a1;
+  --theme-border: #bae6fd;
+  --theme-accent: #e0f2fe;
+}
+
+.light [data-theme="salon_retail"],
+.light[data-theme="salon_retail"] {
+  --theme-primary: #db2777;                       /* Warm Orchid */
+  --theme-bg: #fff1f2;
+  --theme-card: #ffffff;
+  --theme-text: #9f1239;
+  --theme-border: #fecdd3;
+  --theme-accent: #ffe4e6;
+}
+
+.light [data-theme="hotel"],
+.light[data-theme="hotel"] {
+  --theme-primary: #b45309;                       /* Rich Bronze Gold */
+  --theme-bg: #fdfaf2;
+  --theme-card: #ffffff;
+  --theme-text: #78350f;
+  --theme-border: #fde68a;
+  --theme-accent: #fef3c7;
+}
+
+/* Glassmorphism premium-card styling */
+.premium-card {
+  background: var(--theme-card);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--theme-border);
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.03);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.light .premium-card {
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.04), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--theme-border);
+}
+
+/* Button States */
+.btn-primary {
+  background-color: var(--theme-primary);
+  color: #ffffff;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--theme-card);
+  color: var(--theme-text);
+  border: 1px solid var(--theme-border);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--theme-accent);
+}

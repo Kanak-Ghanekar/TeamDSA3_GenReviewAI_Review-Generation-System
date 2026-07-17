@@ -1,0 +1,13 @@
+{
+  "name": "genreview-ai-root",
+  "version": "1.0.0",
+  "description": "Root configuration for GenReview AI project forwarding",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "start": "npm run start --prefix frontend",
+    "install:frontend": "npm install --prefix frontend",
+    "install:backend": "pip install -r requirements.txt"
+  }
+}

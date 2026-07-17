@@ -1,0 +1,124 @@
+@import "../styles/theme.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: var(--theme-bg);
+  background-image: 
+    radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 60%),
+    radial-gradient(at 0% 0%, rgba(15, 23, 42, 0.8) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(3, 7, 18, 0.8) 0px, transparent 60%);
+  color: var(--theme-text);
+  font-family: var(--font-family), system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.015em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  padding: 0;
+  background-attachment: fixed;
+}
+
+[data-theme="restaurant"] {
+  background-image: 
+    radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 60%),
+    radial-gradient(at 100% 100%, rgba(3, 7, 18, 0.8) 0px, transparent 60%);
+}
+
+[data-theme="tyre_shop"] {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
+}
+
+[data-theme="salon_retail"] {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
+}
+
+[data-theme="hotel"] {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.1) 0px, transparent 45%),
+    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.05) 0px, transparent 50%);
+}
+
+.light {
+  background-image: 
+    radial-gradient(at 50% 0%, rgba(5, 150, 105, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(243, 244, 246, 0.8) 0px, transparent 60%);
+}
+
+/* =============================================================
+   FORM CONTROLS BINDING: FIXES ACCESSIBILITY & TEXT VISIBILITY
+   ============================================================= */
+input, textarea, select {
+  background-color: var(--theme-card) !important;
+  color: var(--theme-text) !important;
+  border: 1px solid var(--theme-border) !important;
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--theme-primary) !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15) !important;
+}
+
+.light input:focus, .light textarea:focus, .light select:focus {
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--theme-text) !important;
+  opacity: 0.5 !important;
+}
+
+/* Custom shadows */
+.shadow-premium {
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.light .shadow-premium {
+  box-shadow: 
+    0 4px 20px -2px rgba(0, 0, 0, 0.03),
+    0 2px 6px -1px rgba(0, 0, 0, 0.01);
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 9999px;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+/* Active clicks scaling */
+.active-scale {
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.active-scale:active {
+  transform: scale(0.98);
+}
+
+/* Text Gradient utility */
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

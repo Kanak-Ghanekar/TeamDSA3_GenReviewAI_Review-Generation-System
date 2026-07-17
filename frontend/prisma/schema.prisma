@@ -1,0 +1,271 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  businessId      String           @id @default(dbgenerated("gen_random_uuid()")) @map("business_id") @db.Uuid
+  name            String
+  category        BusinessCategory
+  templateKey     String           @map("template_key")
+  googlePlaceId   String           @map("google_place_id")
+  address         String?
+  city            String?
+  state           String?
+  countryCode     String?          @map("country_code")
+  ratingThreshold Decimal          @default(4.0) @map("rating_threshold") @db.Decimal(2, 1)
+  cooldownHours   Int              @default(24) @map("cooldown_hours")
+  canChangeThreshold Boolean       @default(true) @map("can_change_threshold")
+  canViewAnalytics    Boolean       @default(true) @map("can_view_analytics")
+  canExportData      Boolean       @default(true) @map("can_export_data")
+  ownerId         String           @map("owner_id") @db.Uuid
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  owner           User             @relation("OwnerBusinesses", fields: [ownerId], references: [userId], onDelete: Cascade)
+  template        BusinessTemplate @relation(fields: [templateKey], references: [templateKey])
+  devices         Device[]
+  ragDocuments    RagDocument[]
+  ratings         Rating[]
+  reviewSessions  ReviewSession[]
+
+  @@map("businesses")
+}
+
+model BusinessTemplate {
+  templateKey    String     @id @map("template_key")
+  displayName    String     @map("display_name")
+  toneDescriptor String     @map("tone_descriptor")
+  colorTokens    Json       @map("color_tokens")
+  defaultTags    Json       @map("default_tags")
+  businesses     Business[]
+
+  @@map("business_templates")
+}
+
+model User {
+  userId            String            @id @default(dbgenerated("gen_random_uuid()")) @map("user_id") @db.Uuid
+  name              String
+  email             String            @unique
+  phone             String?
+  role              Role              @default(owner)
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  password          String            @default("")
+  businesses        Business[]        @relation("OwnerBusinesses")
+  resolvedFeedbacks PrivateFeedback[]
+
+  @@map("users")
+}
+
+model Device {
+  deviceId         String   @map("device_id")
+  businessId       String   @map("business_id") @db.Uuid
+  lastSubmissionAt DateTime @map("last_submission_at") @db.Timestamptz(6)
+  business         Business @relation(fields: [businessId], references: [businessId], onDelete: Cascade)
+
+  @@id([deviceId, businessId])
+  @@map("devices")
+}
+
+model ReviewSession {
+  sessionId   String      @id @default(dbgenerated("gen_random_uuid()")) @map("session_id") @db.Uuid
+  businessId  String      @map("business_id") @db.Uuid
+  deviceId    String?     @map("device_id")
+  funnelStage FunnelStage @map("funnel_stage")
+  startedAt   DateTime    @default(now()) @map("started_at") @db.Timestamptz(6)
+  completedAt DateTime?   @map("completed_at") @db.Timestamptz(6)
+  ratings     Rating[]
+  business    Business    @relation(fields: [businessId], references: [businessId], onDelete: Cascade)
+
+  @@map("review_sessions")
+}
+
+model Rating {
+  ratingId     String           @id @default(dbgenerated("gen_random_uuid()")) @map("rating_id") @db.Uuid
+  sessionId    String           @map("session_id") @db.Uuid
+  businessId   String           @map("business_id") @db.Uuid
+  stars        Int              @map("stars") @db.SmallInt
+  selectedTags Json             @map("selected_tags")
+  routedPath   RoutedPath       @map("routed_path")
+  createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  aiDrafts     AiDraft?
+  feedbacks    PrivateFeedback?
+  business     Business         @relation(fields: [businessId], references: [businessId], onDelete: Cascade)
+  session      ReviewSession    @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+
+  @@map("ratings")
+}
+
+model AiDraft {
+  draftId             String    @id @default(dbgenerated("gen_random_uuid()")) @map("draft_id") @db.Uuid
+  ratingId            String    @unique @map("rating_id") @db.Uuid
+  draftOptions        Json      @map("draft_options")
+  selectedOptionIndex Int?      @map("selected_option_index") @db.SmallInt
+  editedText          String?   @map("edited_text")
+  postedToGoogle      Boolean   @default(false) @map("posted_to_google")
+  postedAt            DateTime? @map("posted_at") @db.Timestamptz(6)
+  modelUsed           String    @map("model_used")
+  generationLatencyMs Int       @map("generation_latency_ms")
+  rating              Rating    @relation(fields: [ratingId], references: [ratingId], onDelete: Cascade)
+
+  @@map("ai_drafts")
+}
+
+model PrivateFeedback {
+  feedbackId         String              @id @default(dbgenerated("gen_random_uuid()")) @map("feedback_id") @db.Uuid
+  ratingId           String              @unique @map("rating_id") @db.Uuid
+  feedbackText       String?             @map("feedback_text")
+  contactInfo        String?             @map("contact_info")
+  status             FeedbackStatus      @default(new)
+  resolvedBy         String?             @map("resolved_by") @db.Uuid
+  resolvedAt         DateTime?           @map("resolved_at") @db.Timestamptz(6)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  alerts             Alert[]
+  complaint_severity ComplaintSeverity[]
+  rating             Rating              @relation(fields: [ratingId], references: [ratingId], onDelete: Cascade)
+  resolver           User?               @relation(fields: [resolvedBy], references: [userId])
+
+  @@map("private_feedback")
+}
+
+model Alert {
+  alertId        String          @id @default(dbgenerated("gen_random_uuid()")) @map("alert_id") @db.Uuid
+  feedbackId     String          @map("feedback_id") @db.Uuid
+  channel        AlertChannel
+  sentAt         DateTime        @default(now()) @map("sent_at") @db.Timestamptz(6)
+  acknowledgedAt DateTime?       @map("acknowledged_at") @db.Timestamptz(6)
+  feedback       PrivateFeedback @relation(fields: [feedbackId], references: [feedbackId], onDelete: Cascade)
+
+  @@map("alerts")
+}
+
+model SentimentLabel {
+  labelId           String    @id @default(dbgenerated("gen_random_uuid()")) @map("label_id") @db.Uuid
+  sourceType        String    @map("source_type")
+  sourceId          String    @map("source_id") @db.Uuid
+  overallSentiment  Sentiment @map("overall_sentiment")
+  aspectSentiments  Json      @map("aspect_sentiments")
+  emotion           String?
+  intent            Intent?
+  complaintCategory String?   @map("complaint_category")
+  language          String    @default("en")
+  isAiGeneratedText Boolean?  @map("is_ai_generated_text")
+  labeledBy         String    @map("labeled_by")
+  labeledAt         DateTime  @default(now()) @map("labeled_at") @db.Timestamptz(6)
+
+  @@map("sentiment_labels")
+}
+
+model ComplaintSeverity {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  feedbackId       String          @map("feedback_id") @db.Uuid
+  severity         Severity
+  modelVersion     String          @map("model_version")
+  predictedAt      DateTime        @default(now()) @map("predicted_at") @db.Timestamptz(6)
+  private_feedback PrivateFeedback @relation(fields: [feedbackId], references: [feedbackId], onDelete: Cascade)
+
+  @@map("complaint_severity")
+}
+
+model RetentionPrediction {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  deviceIdOrHashedId String   @map("device_id_or_hashed_contact_id")
+  churnProbability   Decimal  @map("churn_probability") @db.Decimal(4, 3)
+  modelVersion       String   @map("model_version")
+  predictedAt        DateTime @default(now()) @map("predicted_at") @db.Timestamptz(6)
+
+  @@map("retention_predictions")
+}
+
+model RagDocument {
+  documentId       String                 @id @default(dbgenerated("gen_random_uuid()")) @map("document_id") @db.Uuid
+  businessId       String                 @map("business_id") @db.Uuid
+  documentType     DocumentType           @map("document_type")
+  contentText      String                 @map("content_text")
+  sourceDate       DateTime               @map("source_date") @db.Timestamptz(6)
+  embedding_vector Unsupported("vector")?
+  business         Business               @relation(fields: [businessId], references: [businessId], onDelete: Cascade)
+
+  @@map("rag_documents")
+}
+
+model AuditLog {
+  auditId     String   @id @default(dbgenerated("gen_random_uuid()")) @map("audit_id") @db.Uuid
+  entityType  String   @map("entity_type")
+  entityId    String   @map("entity_id")
+  action      String
+  performedBy String   @map("performed_by")
+  performedAt DateTime @default(now()) @map("performed_at") @db.Timestamptz(6)
+  details     Json
+
+  @@map("audit_logs")
+}
+
+enum BusinessCategory {
+  restaurant
+  tyre_shop
+  salon_retail
+  hotel
+  other
+}
+
+enum Role {
+  owner
+  graphura_admin
+}
+
+enum FunnelStage {
+  scanned
+  rated
+  completed
+  abandoned
+}
+
+enum RoutedPath {
+  public
+  private
+}
+
+enum FeedbackStatus {
+  new
+  in_progress
+  resolved
+  escalated
+}
+
+enum AlertChannel {
+  dashboard
+  whatsapp
+  email
+}
+
+enum Sentiment {
+  positive
+  neutral
+  negative
+  mixed
+}
+
+enum Intent {
+  complaint
+  suggestion
+  appreciation
+  inquiry
+}
+
+enum Severity {
+  low
+  medium
+  high
+  critical
+}
+
+enum DocumentType {
+  review
+  faq
+  branding_guideline
+  menu_item
+}
